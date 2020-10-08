@@ -1,0 +1,28 @@
+#FROM ubuntu:latest
+FROM ubuntu:xenial
+
+RUN echo "tzdata tzdata/Areas select US" > /tmp/preseed.txt; \
+    echo "tzdata tzdata/Zones/Europe select Eastern" >> /tmp/preseed.txt; \
+    debconf-set-selections /tmp/preseed.txt && \
+    rm -f /etc/timezone /etc/localtime && \
+    apt-get update && \
+    apt-get install -y tzdata
+RUN apt-get install apache2 -y ; \
+    a2enmod proxy && \
+    a2enmod ssl && \
+    a2enmod proxy_http
+COPY vhost1.docker.biz /etc/apache2/sites-available/vhost1.docker.biz.conf
+COPY vhost2.docker.biz /etc/apache2/sites-available/vhost2.docker.biz.conf
+COPY www.timecard.ru /etc/apache2/sites-available/www.timecard.ru.conf
+
+COPY www.timecard.ru.key /etc/ssl/private/www.timecard.ru.key
+COPY www.timecard.ru.crt /etc/ssl/certs/www.timecard.ru.crt
+COPY www.timecard.ru.ca-bundle /etc/ssl/certs/www.timecard.ru.ca-bundle
+
+RUN a2ensite vhost1.docker.biz
+RUN a2ensite vhost2.docker.biz
+RUN a2ensite www.timecard.ru
+
+EXPOSE 80 443
+
+CMD apache2ctl -D FOREGROUND

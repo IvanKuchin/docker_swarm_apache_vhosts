@@ -1,0 +1,2 @@
+path to save = /usr/local/share/proj/
+path to load = /usr/local/share/src/

@@ -1,0 +1,8 @@
+<VirtualHost *:80>
+ServerName vhost1.docker.biz
+<Proxy *>
+Allow from localhost
+</Proxy>
+ProxyPass / http://vhost1/
+CustomLog /var/log/apache2/vhost1.log combined
+</VirtualHost>
